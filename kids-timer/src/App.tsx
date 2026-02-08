@@ -1,12 +1,12 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from 'react';
+import Timers from './components/Timers/timers';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
 
   return (
     <>
-  <h1>jejfgoewc</h1>
+  <Timers/>
     </>
   )
 }
