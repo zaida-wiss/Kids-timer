@@ -6,11 +6,22 @@ type TimerItem = {
   emoji: string;
   total: number; // sekunder
   left: number;  // sekunder
+  color: string; // färg per timer
 };
 
 const EMOJIS = ["⏱️", "📚", "💻", "☕", "🏃", "🧘", "🎯", "🔥", "🧠", "🧼"];
 const MAX_SECONDS = 60 * 60; // 60 min
-const STEP = 30; // 30 sek steg (ändra till 60 om du vill bara minuter)
+const STEP = 30; // 30 sek steg
+
+const COLORS = [
+  "#22c55e",
+  "#06b6d4",
+  "#a78bfa",
+  "#fb7185",
+  "#f59e0b",
+  "#60a5fa",
+  "#34d399",
+];
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
@@ -26,13 +37,16 @@ function formatMMSS(totalSeconds: number) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+function pickRandomColor() {
+  return COLORS[Math.floor(Math.random() * COLORS.length)];
+}
+
 export default function Timers(): JSX.Element {
   const [selectedEmoji, setSelectedEmoji] = useState<string>(EMOJIS[0]);
-  const [pickSeconds, setPickSeconds] = useState<number>(5 * 60); // vald tid via drag
+  const [pickSeconds, setPickSeconds] = useState<number>(5 * 60);
   const [timers, setTimers] = useState<TimerItem[]>([]);
   const barRef = useRef<HTMLDivElement | null>(null);
 
-  // Tick: minskar alla timers 1/s
   useEffect(() => {
     const id = window.setInterval(() => {
       setTimers((prev) =>
@@ -55,6 +69,7 @@ export default function Timers(): JSX.Element {
       emoji: selectedEmoji,
       total: pickSeconds,
       left: pickSeconds,
+      color: pickRandomColor(), // ✅ här!
     };
 
     setTimers((prev) => [t, ...prev]);
@@ -74,13 +89,12 @@ export default function Timers(): JSX.Element {
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // fånga pekaren så drag fortsätter även om man hamnar lite utanför
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
     setFromPointer(e.clientX);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.buttons !== 1) return; // bara när man drar
+    if (e.buttons !== 1) return;
     setFromPointer(e.clientX);
   };
 
@@ -88,10 +102,12 @@ export default function Timers(): JSX.Element {
     <div className="timersWrap">
       <h2 className="timersTitle">Timers</h2>
 
-      {/* Rad med emoji-pil + lägg till */}
       <div className="topRow">
         <div className="emojiPicker">
-          <span className="emojiBig" aria-hidden="true">{selectedEmoji}</span>
+          <span className="emojiBig" aria-hidden="true">
+            {selectedEmoji}
+          </span>
+
           <select
             className="emojiSelect"
             value={selectedEmoji}
@@ -104,7 +120,10 @@ export default function Timers(): JSX.Element {
               </option>
             ))}
           </select>
-          <span className="chev" aria-hidden="true">▾</span>
+
+          <span className="chev" aria-hidden="true">
+            ▾
+          </span>
         </div>
 
         <button className="addBtn" type="button" onClick={addTimer}>
@@ -112,7 +131,6 @@ export default function Timers(): JSX.Element {
         </button>
       </div>
 
-      {/* Stor “bassäng” du drar med tummen */}
       <div className="pickHeader">
         <span>Välj tid</span>
         <span className="pickTime">{pickLabel}</span>
@@ -130,8 +148,10 @@ export default function Timers(): JSX.Element {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onKeyDown={(e) => {
-          if (e.key === "ArrowLeft") setPickSeconds((s) => clamp(s - STEP, 0, MAX_SECONDS));
-          if (e.key === "ArrowRight") setPickSeconds((s) => clamp(s + STEP, 0, MAX_SECONDS));
+          if (e.key === "ArrowLeft")
+            setPickSeconds((s) => clamp(s - STEP, 0, MAX_SECONDS));
+          if (e.key === "ArrowRight")
+            setPickSeconds((s) => clamp(s + STEP, 0, MAX_SECONDS));
         }}
       >
         <div
@@ -150,7 +170,6 @@ export default function Timers(): JSX.Element {
         <span>60:00</span>
       </div>
 
-      {/* Timers som färgade avlånga bassänger */}
       <div className="timerList">
         {timers.map((t) => {
           const pct = (t.left / t.total) * 100;
@@ -160,7 +179,10 @@ export default function Timers(): JSX.Element {
               <span className="emojiSmall">{t.emoji}</span>
 
               <div className="pool">
-                <div className="poolFill" style={{ width: `${pct}%` }} />
+                <div
+                  className="poolFill"
+                  style={{ width: `${pct}%`, background: t.color }}
+                />
               </div>
 
               <span className="timeSmall">{formatMMSS(t.left)}</span>

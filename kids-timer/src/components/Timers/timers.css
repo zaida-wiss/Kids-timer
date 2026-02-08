@@ -37,8 +37,9 @@
   inset: 0;
   opacity: 0;
   width: 100%;
-  height: 100%;
+  height: 00%;
   cursor: pointer;
+  font-size: 30px;
 }
 
 .chev {
@@ -84,7 +85,7 @@
 .pickFill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #22c55e, #06b6d4);
+  background: linear-gradient(90deg, #aa0e95, #0d80c8);
 }
 
 .pickThumb {
@@ -123,7 +124,8 @@
 .emojiSmall {
   width: 28px;
   text-align: center;
-  font-size: 18px;
+  font-size: 48px;
+  padding: 0 20px;
 }
 
 .timeSmall {
@@ -143,6 +145,6 @@
 
 .poolFill {
   height: 100%;
-  background: linear-gradient(90deg, #a78bfa, #22c55e);
+  background: linear-gradient(90deg, #a78bfa, #c0c522);
   transition: width 1s linear;
 }
